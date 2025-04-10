@@ -7,7 +7,7 @@ from common.consts import RECORDS_PATH, WAV_FILE_NAME
 from common.log import debug
 from common.process_sync import should_stop
 
-FRAME_RATE = 16000
+FRAME_RATE = 48000
 
 SAMPLE_FORMAT = pyaudio.paInt16
 
@@ -24,8 +24,9 @@ class MicArray:
         self.frames = []
 
     def _select_mic_device_index(self):
-        max_channels = 0
-        max_channels_device_index = None
+        correct_channels = 0
+        correct_channels_device_index = None
+
         for i in range(self.pyaudio_instance.get_device_count()):
             dev = self.pyaudio_instance.get_device_info_by_index(i)
             name = dev['name'].encode('utf-8')
@@ -36,15 +37,16 @@ class MicArray:
                 name=name,
                 in_channels=input_channels
             )
-            if input_channels > max_channels:
-                max_channels = input_channels
-                max_channels_device_index = i
-        if max_channels_device_index is None:
+            if input_channels == 16: #Then it is the uma 16
+                correct_channels = input_channels
+                correct_channels_device_index = i
+        if correct_channels_device_index is None:
             raise Exception('can not find input device')
-        self.channels = max_channels
-        self.chunk_size = self.chunk_size if self.chunk_size else self.sample_rate // self.channels
-        debug('Audio device', channels=max_channels)
-        return max_channels_device_index
+        self.channels = correct_channels
+        self.chunk_size = self.chunk_size if self.chunk_size else self.sample_rate // self.channels + 1
+        print("Chunck size is: ", self.chunk_size)
+        debug('Audio device', channels=correct_channels)
+        return correct_channels_device_index
 
     def run(self):
         self.frames = []

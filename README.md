@@ -1,15 +1,5 @@
-# recorder
-
-Proof of concept for capturing video and audio.
-
-## Record video and audio
-```
-./record.sh
-ctrl+c
-```
-
-## Merge video and audio
-```
-cd recorder_output/records/
-./merge.sh
-```
+Run 
+python main.py mic
+THis should create recorder_output/records.py
+Then in the jupyter notebook run the first cell, which should convert it into a audio.h5 under recorder_output
+Then run the second cell
